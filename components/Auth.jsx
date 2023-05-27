@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { signInWithGithub } from "@/services/firebase/auth";
+import { signInWithGithub, signInWithGoogle } from "@/utils/firebase/auth";
 
 export default function Auth(props) {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -25,6 +25,15 @@ export default function Auth(props) {
     }
   };
 
+  // Github Acknowledgement
+  const handleGoogle = async () => {
+    const googleData = await signInWithGoogle();
+    console.log(googleData);
+    if (googleData.user) {
+      props.loggedIn(googleData);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center text-sm sm:text-sm">
       <div
@@ -42,7 +51,10 @@ export default function Auth(props) {
           <h3 className="text-xl font-bold">{props.details.title}</h3>
         </div>
         <div className="grid grid-flow-col gap-4 my-5">
-          <button className="border-2 rounded-md border-black-bh p-2 hover:bg-black-bh">
+          <button
+            className="border-2 rounded-md border-black-bh p-2 hover:bg-black-bh"
+            onClick={handleGoogle}
+          >
             <div className="flex items-center justify-center">
               <Image
                 src="/google.svg"
@@ -104,8 +116,7 @@ export default function Auth(props) {
                 type={passwordVisible ? "text" : "password"}
                 id="password"
                 className={`w-full px-3 py-2 border-2 text-sm
-                border-black-shade
-                 bg-black-input rounded-md 
+                border-black-shade bg-black-input rounded-md 
                 focus:outline-none focus:ring-2 focus:ring-[#33363d]`}
                 placeholder="Enter your password"
                 onFocus={() => setIsFocused(true)}

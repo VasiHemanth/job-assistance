@@ -2,9 +2,9 @@ import Nav from "@/components/Nav";
 
 export default function StoryLayout({ children }) {
   return (
-    <section>
+    <section className="flex">
       <Nav />
-      {children}
+      <div className="my-5">{children}</div>
     </section>
   );
 }

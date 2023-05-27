@@ -6,27 +6,28 @@ import {
   signOut,
   onAuthStateChanged,
   GithubAuthProvider,
+  GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
 
 export const auth = getAuth(app);
 
-export const getCurrentUser = async () => {
-  const promisifiedOnAuthStateChanged = (auth) => {
-    return new Promise((resolve, reject) => {
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          resolve(user.uid);
-        } else {
-          resolve(null);
-        }
-      });
-    });
-  };
+// export const getCurrentUser = async () => {
+//   const promisifiedOnAuthStateChanged = (auth) => {
+//     return new Promise((resolve, reject) => {
+//       auth.onAuthStateChanged((user) => {
+//         if (user) {
+//           resolve(user);
+//         } else {
+//           resolve(null);
+//         }
+//       });
+//     });
+//   };
 
-  const uid = await promisifiedOnAuthStateChanged(auth);
-  return uid;
-};
+//   const user = await promisifiedOnAuthStateChanged(auth);
+//   return user;
+// };
 
 export const signUpUserWithEmailAndPassword = async (email, password) => {
   try {
@@ -62,6 +63,18 @@ export const signInWithGithub = async () => {
     const githubUser = await signInWithPopup(auth, provider);
     console.log(githubUser);
     return githubUser;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const signInWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    const googleUser = await signInWithPopup(auth, provider);
+    console.log(googleUser);
+    return googleUser;
   } catch (error) {
     console.log(error);
     return error;

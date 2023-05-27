@@ -15,6 +15,7 @@ export default function Login() {
 
   const loggedIn = (details) => {
     console.log(details);
+
     router.push("/user-stories");
   };
 
