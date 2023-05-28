@@ -26,7 +26,7 @@ export default function Nav() {
   };
 
   return (
-    <nav className="flex flex-col w-1/5 h-screen bg-black-shade text-xs">
+    <nav className="flex flex-col h-screen bg-black-shade text-xs">
       <div className="grid grid-rows-[auto,1fr] h-full overflow-hidden">
         <div className="m-3">
           <Image

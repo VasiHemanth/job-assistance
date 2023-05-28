@@ -64,7 +64,7 @@ export const signInWithGithub = async () => {
     console.log(githubUser);
     return githubUser;
   } catch (error) {
-    console.log(error);
+    console.log("Error from auth JS file", error);
     return error;
   }
 };
@@ -76,7 +76,7 @@ export const signInWithGoogle = async () => {
     console.log(googleUser);
     return googleUser;
   } catch (error) {
-    console.log(error);
+    console.log("Error from auth JS file", error);
     return error;
   }
 };

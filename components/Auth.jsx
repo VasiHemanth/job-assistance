@@ -22,6 +22,8 @@ export default function Auth(props) {
     const githubData = await signInWithGithub();
     if (githubData.user) {
       props.loggedIn(githubData);
+    } else {
+      console.log(githubData);
     }
   };
 
@@ -52,7 +54,8 @@ export default function Auth(props) {
         </div>
         <div className="grid grid-flow-col gap-4 my-5">
           <button
-            className="border-2 rounded-md border-black-bh p-2 hover:bg-black-bh"
+            className="border-2 rounded-md border-black-bh p-2 hover:bg-black-bh
+            hover:border-gray-400"
             onClick={handleGoogle}
           >
             <div className="flex items-center justify-center">
@@ -67,7 +70,9 @@ export default function Auth(props) {
             </div>
           </button>
           <button
-            className="border-2 rounded-md border-black-bh p-2 hover:bg-black-bh"
+            className="border-2 rounded-md border-black-bh p-2 hover:bg-black-bh
+            hover:border-gray-400
+            "
             onClick={handleGithub}
           >
             <div className="flex items-center justify-center">
