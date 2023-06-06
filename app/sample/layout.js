@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
-export default function StoryLayout({ children }) {
+export default function SampleLayout({ children }) {
   const { isLoading } = useCurrentUser();
 
   if (isLoading) {

@@ -18,7 +18,7 @@ export default function Nav() {
   // const [currentUser, loading] = useAuthContext();
 
   const router = useRouter();
-  const { currentUser, userImage, loading } = useCurrentUser();
+  const { currentUser, userImage } = useCurrentUser();
 
   const handleSignOut = () => {
     signOutUser();

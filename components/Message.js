@@ -2,11 +2,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { darcula } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-export default function Message({text: initialText, avatar, idx, author}) {
+export default function Message({ text: initialText, avatar, idx, author }) {
   const [text, setText] = useState(author === "ai" ? "" : initialText);
-  const bgColorClass = idx % 2 === 0 ? "bg-slate-100" : "bg-slate-200";
+  const bgColorClass = idx % 2 === 0 ? "bg-black-shade" : "bg-black-input";
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -16,27 +16,25 @@ export default function Message({text: initialText, avatar, idx, author}) {
     return () => clearTimeout(timeout);
   }, [initialText, text]);
 
-  const blinkingCursorClass = initialText.length === text.length ? "" : "blinking-cursor";
+  const blinkingCursorClass =
+    initialText.length === text.length ? "" : "blinking-cursor";
 
   return (
-    <div className={`flex flex-row ${bgColorClass} p-4`}>
+    <div className={`flex flex-row  p-4 border-black text-sm`}>
       <div className="w-[30px] relative mr-4">
-        <Image 
-          src={avatar}
-          width={30}
-          height={30}
-          alt=""
-        />
+        <Image src={avatar} width={30} height={30} alt="" />
       </div>
-      <div className="w-full">
-        <ReactMarkdown 
+      <div
+        className={`w-full ${bgColorClass} px-4 py-2 rounded-r-lg rounded-b-lg`}
+      >
+        <ReactMarkdown
           className={blinkingCursorClass}
           components={{
-            code({inline, className, children, style, ...props}) {
+            code({ inline, className, children, style, ...props }) {
               const match = /language-(\w+)/.exec(className || "");
               return !inline && match ? (
                 <SyntaxHighlighter
-                  style={darcula}
+                  style={oneDark}
                   language={match[1]}
                   PreTag="div"
                   {...props}
@@ -47,13 +45,13 @@ export default function Message({text: initialText, avatar, idx, author}) {
                 <code className={className} {...props}>
                   {children}
                 </code>
-              )
-            }
+              );
+            },
           }}
         >
           {text}
         </ReactMarkdown>
       </div>
     </div>
-  )
+  );
 }

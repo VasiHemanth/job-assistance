@@ -1,13 +1,18 @@
 "use client";
+
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { signInWithGithub, signInWithGoogle } from "@/utils/firebase/auth";
+import Loader from "./Loader";
 
 export default function Auth(props) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
+  const [isLoadingGithub, setIsLoadingGithub] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevPasswordVisible) => !prevPasswordVisible);
@@ -19,9 +24,11 @@ export default function Auth(props) {
 
   // Github Acknowledgement
   const handleGithub = async () => {
+    setIsLoadingGithub(true);
     const githubData = await signInWithGithub();
     if (githubData.user) {
       props.loggedIn(githubData);
+      setIsLoadingGithub(false);
     } else {
       console.log(githubData);
     }
@@ -29,10 +36,12 @@ export default function Auth(props) {
 
   // Github Acknowledgement
   const handleGoogle = async () => {
+    setIsLoadingGoogle(true);
     const googleData = await signInWithGoogle();
     console.log(googleData);
     if (googleData.user) {
       props.loggedIn(googleData);
+      setIsLoadingGoogle(false);
     }
   };
 
@@ -58,16 +67,20 @@ export default function Auth(props) {
             hover:border-gray-400"
             onClick={handleGoogle}
           >
-            <div className="flex items-center justify-center">
-              <Image
-                src="/google.svg"
-                width={28}
-                height={28}
-                alt="Google Icon"
-                className="mx-1"
-              />
-              <span className="text-sm">Google</span>
-            </div>
+            {isLoadingGoogle ? (
+              <Loader loader="loader_1" />
+            ) : (
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/google.svg"
+                  width={28}
+                  height={28}
+                  alt="Google Icon"
+                  className="mx-1"
+                />
+                <span className="text-sm">Google</span>
+              </div>
+            )}
           </button>
           <button
             className="border-2 rounded-md border-black-bh p-2 hover:bg-black-bh
@@ -75,16 +88,21 @@ export default function Auth(props) {
             "
             onClick={handleGithub}
           >
-            <div className="flex items-center justify-center">
-              <Image
-                src="/github.svg"
-                width={26}
-                height={26}
-                alt="Github Icon"
-                className="mx-1"
-              />
-              Github
-            </div>
+            {" "}
+            {isLoadingGithub ? (
+              <Loader loader="loader_1" />
+            ) : (
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/github.svg"
+                  width={26}
+                  height={26}
+                  alt="Github Icon"
+                  className="mx-1"
+                />
+                Github
+              </div>
+            )}
           </button>
         </div>
         <div className="flex items-center">
@@ -159,7 +177,7 @@ export default function Auth(props) {
             className="w-full bg-blue-500 text-white font-semibold px-4 py-2 
             rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
           >
-            Continue
+            {isLoading ? <Loader loader="loader_2" /> : "Continue"}
           </button>
         </form>
         <p className="px-4 py-2 flex items-center justify-center">

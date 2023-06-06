@@ -1,5 +1,9 @@
-import Auth from "@/components/Auth";
+"use client";
+
 import React from "react";
+import { useRouter } from "next/navigation";
+
+import Auth from "@/components/Auth";
 
 const SignUpPageDetails = {
   title: "Create your account",
@@ -7,5 +11,13 @@ const SignUpPageDetails = {
 };
 
 export default function SignUp() {
-  return <Auth details={SignUpPageDetails} />;
+  const router = useRouter();
+
+  const loggedIn = (details) => {
+    console.log(details);
+
+    router.push("/user-stories");
+  };
+
+  return <Auth details={SignUpPageDetails} loggedIn={loggedIn} />;
 }
