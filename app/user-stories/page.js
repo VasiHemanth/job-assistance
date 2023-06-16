@@ -1,31 +1,41 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { useRouter } from "next/navigation";
+import {
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  setDoc,
+  getDocs,
+  query,
+  orderBy,
+} from "firebase/firestore";
 
 import { openai } from "@/utils/openai/init";
+import { db } from "@/utils/firebase/init";
 
 import Prompt from "@/components/Prompt";
 import Message from "@/components/Message";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-
-import { collection, doc, setDoc, addDoc, getDoc } from "firebase/firestore";
-import { useCollectionData } from "react-firebase-hooks/firestore";
-
-import { db } from "@/utils/firebase/init";
+import { AuthContext } from "../context/AuthContext";
 
 function UserStories() {
-  // const [loading, setLoading] = useState(false);
   const markdown = `
-Hi! I'm **Jarvis**, the coding assistant. I'm here to help you with any questions you have related to programming. Feel free to ask me anything and I'll do my best to answer it.
+  Hi! I'm **Jarvis**, the coding assistant. I'm here to help you with any questions you have related to programming. 
+  Feel free to ask me anything and I'll do my best to answer it.
 
-Here is an Example:
 
-Create a python code to print all the elements in the list
+  Here is an Example:
 
-~~~python
-list = [1, 2, 3, 4, 5]
 
-for number in list:
-    print(number)
+  Create a python code to print all the elements in the list
+
+  ~~~python
+  list = [1, 2, 3, 4, 5]
+
+  for number in list:
+      print(number)
 `;
 
   const Startprompt =
@@ -33,82 +43,128 @@ for number in list:
 
   const [messages, setMessages] = useState([
     {
-      id: new Date().toISOString(),
+      created_at: new Date().toISOString(),
       author: "human",
       avatar: "/profile.svg",
       text: "Hi there, Who are you?",
     },
     {
-      id: new Date().toISOString(),
+      created_at: new Date().toISOString() + 0.001,
       author: "ai",
       avatar: "/onestepai-logo.png",
       text: markdown,
     },
   ]);
 
-  // const chatRef = useRef(null);
-  const { currentUser, userImage, uid } = useCurrentUser();
+  // const { currentUser, userImage, uid } = useCurrentUser();
+  const { currentUser, userImage, uid, isLoading } = useContext(AuthContext);
 
-  // const query = collection(db, "user-stories");
-  // const [docs, loading, error] = useCollectionData(query);
+  // console.log("CurrentUsers", currentUser, "Loading", isLoading);
+  const router = useRouter();
 
-  // console.log("Check out the docs", query);
-  // console.log("Docs", docs);
-
-  // const saveUserData = async () => {
-  //   await setDoc(doc(db, "user-stories", uid), {
-  //     user: currentUser,
-  //   });
-  // };
-
-  // saveUserData();
-
-  // const saveQuestion = async (prompt) => {
-  //   const docRef = await addDoc(collection(db, "story"), {
-  //     userId: uid,
-  //     author: currentUser,
-  //     questionText: prompt,
-  //   });
-
-  //   const questionId = docRef.id;
-  //   console.log("Document written with id:", questionId);
-  //   return questionId;
-  // };
-
-  // const saveReference = async (resData, questionId) => {
-  //   console.log("References", questionId);
-  //   const queId = await questionId;
-  //   console.log("Checking", queId);
-
-  //   await addDoc(collection(db, "reference"), {
-  //     userId: uid,
-  //     questionId: queId,
-  //     referenceText: resData,
-  //   });
-  // };
-
-  const getData = async () => {
-    const docRef = await getDoc(doc(db, "sample"));
-    console.log("User Data", docRef);
+  const saveReference = async (human, ai) => {
+    await addDoc(collection(db, `user-stories/${uid}/questions`), human);
+    await addDoc(collection(db, `user-stories/${uid}/questions`), ai);
   };
 
+  const getData = async () => {
+    const docRef = collection(db, `user-stories/${uid}/questions`);
+    const q = query(docRef, orderBy("created_at", "asc"));
+    const querySnapshot = await getDocs(q);
+
+    let m = [];
+    querySnapshot.forEach((doc) => {
+      m.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+
+    setMessages(m);
+    // console.log("messages", messages);
+  };
+
+  const insertUser = async (userId, username) => {
+    const userDocument = {
+      username: username,
+    };
+
+    await setDoc(doc(db, `users`, userId), userDocument);
+  };
+
+  const checkUserExists = async (userId) => {
+    try {
+      const userStoryRef = doc(db, "users", userId);
+      const userStoryDoc = await getDoc(userStoryRef);
+
+      // console.log(userStoryDoc.exists());
+
+      if (userStoryDoc.exists()) {
+        // User ID exists in the "user-stories" collection
+        // console.log("user exisy");
+        return true;
+      } else {
+        // User ID does not exist in the "user-stories" collection
+        // console.log("userId not exist");
+        insertUser(uid, currentUser);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error checking user existence:", error);
+      // Handle the error appropriately
+      throw error;
+    }
+  };
+
+  // const checkUser = checkUserExists(uid);
+  // // console.log(checkUser);
+  // checkUser.then((result) => {
+  //   if (result) {
+  //     getData();
+  //   } else {
+  //     saveReference(messages[0], messages[1]);
+  //   }
+  // });
+
   useEffect(() => {
-    console.log("User Stories useEffect");
-  }, [messages]);
+    if (uid) {
+      const checkUser = checkUserExists(uid);
+      // console.log(checkUser);
+      checkUser.then((result) => {
+        if (result) {
+          // console.log("getdata");
+          getData();
+        } else {
+          // console.log("saveReference");
+          saveReference(messages[0], messages[1]);
+        }
+      });
+    }
+  }, [uid]);
+
+  // if (checkUser) {
+  //   getData();
+  // } else {
+  //   saveReference(messages[0], messages[1]);
+  // }
 
   async function handleSubmit(prompt) {
     if (prompt.trim().length === 0) {
       return;
     }
 
-    getData();
-    // const questionId = saveQuestion(prompt);
+    const human = {
+      created_at: new Date().toISOString(),
+      author: currentUser,
+      avatar: userImage,
+      text: prompt,
+    };
 
     setMessages((messages) => {
       return [
         ...messages,
         {
-          id: new Date().toISOString(),
+          created_at: new Date().toISOString(),
           author: currentUser,
           avatar: userImage,
           text: prompt,
@@ -128,27 +184,36 @@ for number in list:
         frequency_penalty: 0,
         presence_penalty: 0,
       });
-      // console.log(response);
+      // // console.log(response);
       let resData = response.data.choices[0].text.trim();
-      // try {
-      //   saveReference(resData, questionId);
-      // } catch (e) {
-      //   console.log(error);
-      // }
-      // console.log("ResData", resData);
+
+      // // console.log("ResData", resData);
+
+      const ai = {
+        created_at: new Date().toISOString(),
+        author: "ai_",
+        avatar: "/onestepai-logo.png",
+        text: resData,
+      };
       setMessages((messages) => {
         return [
           ...messages,
           {
-            id: new Date().toISOString() + "0.001",
+            created_at: new Date().toISOString(),
             author: "ai",
             avatar: "/onestepai-logo.png",
             text: resData,
           },
         ];
       });
+      try {
+        saveReference(human, ai);
+      } catch (e) {
+        // console.log(error);
+      }
+      // console.log("messages", messages);
     } catch (error) {
-      console.log("handle submit error");
+      // console.log("handle submit error");
       console.error("Error", error);
     }
   }
@@ -158,7 +223,7 @@ for number in list:
         <div className="py-5 px-10">
           {messages.map((message, i) => (
             <Message
-              key={message.id}
+              key={message.created_at}
               idx={i}
               author={message.author}
               avatar={message.avatar}

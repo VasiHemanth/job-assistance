@@ -14,7 +14,7 @@ export default function SignUp() {
   const router = useRouter();
 
   const loggedIn = (details) => {
-    console.log(details);
+    // console.log(details);
 
     router.push("/user-stories");
   };

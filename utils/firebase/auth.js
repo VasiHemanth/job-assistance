@@ -4,7 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
+  getAdditionalUserInfo,
   GithubAuthProvider,
   GoogleAuthProvider,
   signInWithPopup,
@@ -36,24 +36,24 @@ export const signUpUserWithEmailAndPassword = async (email, password) => {
       email,
       password
     );
-    console.log(userCredential.user);
-    console.log(auth);
+    // console.log(userCredential.user);
+    // console.log(auth);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 
 export const signInUserWithEmailAndPassword = async (email, password) => {
   try {
-    console.log("hi");
+    // console.log("hi");
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
       password
     );
-    console.log(userCredential.user);
+    // console.log(userCredential.user);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 
@@ -61,10 +61,10 @@ export const signInWithGithub = async () => {
   const provider = new GithubAuthProvider();
   try {
     const githubUser = await signInWithPopup(auth, provider);
-    console.log(githubUser);
+    // console.log(githubUser);
     return githubUser;
   } catch (error) {
-    console.log("Error from auth JS file", error);
+    // console.log("Error from auth JS file", error);
     return error;
   }
 };
@@ -73,10 +73,10 @@ export const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
     const googleUser = await signInWithPopup(auth, provider);
-    console.log(googleUser);
+    // console.log(googleUser);
     return googleUser;
   } catch (error) {
-    console.log("Error from auth JS file", error);
+    // console.log("Error from auth JS file", error);
     return error;
   }
 };
@@ -85,6 +85,6 @@ export const signOutUser = async () => {
   try {
     await signOut(auth);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };

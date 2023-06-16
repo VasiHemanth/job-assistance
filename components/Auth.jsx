@@ -26,19 +26,20 @@ export default function Auth(props) {
   const handleGithub = async () => {
     setIsLoadingGithub(true);
     const githubData = await signInWithGithub();
+    let val = null;
     if (githubData.user) {
-      props.loggedIn(githubData);
-      setIsLoadingGithub(false);
+      val = props.loggedIn(githubData);
     } else {
-      console.log(githubData);
+      // console.log(githubData);
     }
+    setIsLoadingGithub(val);
   };
 
   // Github Acknowledgement
   const handleGoogle = async () => {
     setIsLoadingGoogle(true);
     const googleData = await signInWithGoogle();
-    console.log(googleData);
+    // console.log(googleData);
     if (googleData.user) {
       props.loggedIn(googleData);
       setIsLoadingGoogle(false);
@@ -90,7 +91,9 @@ export default function Auth(props) {
           >
             {" "}
             {isLoadingGithub ? (
-              <Loader loader="loader_1" />
+              <div className="flex items-center justify-center">
+                <Loader loader="loader_1" />
+              </div>
             ) : (
               <div className="flex items-center justify-center">
                 <Image

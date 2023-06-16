@@ -23,12 +23,12 @@ export default function Sample() {
     try {
       const docRef = collection(db, "user-stories", uid, "questions");
       const docSnap = await getDocs(docRef);
-      console.log("Get data details", typeof docSnap);
+      // console.log("Get data details", typeof docSnap);
       docSnap.forEach((doc) => {
-        console.log(doc.id, " =>", doc.data());
+        // console.log(doc.id, " =>", doc.data());
       });
     } catch (e) {
-      console.log("Error", e);
+      // console.log("Error", e);
     }
   };
 
@@ -44,7 +44,7 @@ export default function Sample() {
         }
       );
     } catch (e) {
-      console.log("Save data error", e);
+      // console.log("Save data error", e);
     }
   };
 

@@ -29,7 +29,8 @@ export default function Navbar() {
           <Image
             src={userImage ? userImage : "/profile.svg"}
             alt="add Icon"
-            fill={true}
+            width={30}
+            height={30}
           />
         </div>
         <button

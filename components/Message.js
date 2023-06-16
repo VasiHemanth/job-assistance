@@ -11,13 +11,14 @@ export default function Message({ text: initialText, avatar, idx, author }) {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setText(initialText.slice(0, text.length + 1));
-    }, 10);
+    }, 2);
 
     return () => clearTimeout(timeout);
   }, [initialText, text]);
 
   const blinkingCursorClass =
-    initialText.length === text.length ? "" : "blinking-cursor";
+    // initialText.length === text.length ? "" : "blinking-cursor"
+    "";
 
   return (
     <div className={`flex flex-row  p-4 border-black text-sm`}>

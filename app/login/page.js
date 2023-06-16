@@ -14,9 +14,10 @@ export default function Login() {
   const router = useRouter();
 
   const loggedIn = (details) => {
-    console.log(details);
+    // console.log(details);
 
     router.push("/user-stories");
+    return false;
   };
 
   return <Auth details={loginPageDetails} loggedIn={loggedIn} />;

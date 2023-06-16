@@ -11,9 +11,15 @@ export const useCurrentUser = () => {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user.displayName);
-      setUserImage(user.photoURL);
-      setUid(user.uid);
+      if (user) {
+        setCurrentUser(user.displayName || null);
+        setUserImage(user.photoURL || "/profile.svg");
+        setUid(user.uid || "");
+      } else {
+        setCurrentUser(null);
+        setUserImage("/profile.svg");
+        setUid("");
+      }
       setIsLoading(false);
     });
 
