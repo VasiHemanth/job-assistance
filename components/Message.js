@@ -17,8 +17,7 @@ export default function Message({ text: initialText, avatar, idx, author }) {
   }, [initialText, text]);
 
   const blinkingCursorClass =
-    // initialText.length === text.length ? "" : "blinking-cursor"
-    "";
+    initialText.length === text.length ? "" : "blinking-cursor";
 
   return (
     <div className={`flex flex-row  p-4 border-black text-sm`}>
@@ -29,7 +28,7 @@ export default function Message({ text: initialText, avatar, idx, author }) {
         className={`w-full ${bgColorClass} px-4 py-2 rounded-r-lg rounded-b-lg`}
       >
         <ReactMarkdown
-          className={blinkingCursorClass}
+          // className={blinkingCursorClass}
           components={{
             code({ inline, className, children, style, ...props }) {
               const match = /language-(\w+)/.exec(className || "");
