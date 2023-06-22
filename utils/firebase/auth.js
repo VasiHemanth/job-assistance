@@ -12,23 +12,6 @@ import {
 
 export const auth = getAuth(app);
 
-// export const getCurrentUser = async () => {
-//   const promisifiedOnAuthStateChanged = (auth) => {
-//     return new Promise((resolve, reject) => {
-//       auth.onAuthStateChanged((user) => {
-//         if (user) {
-//           resolve(user);
-//         } else {
-//           resolve(null);
-//         }
-//       });
-//     });
-//   };
-
-//   const user = await promisifiedOnAuthStateChanged(auth);
-//   return user;
-// };
-
 export const signUpUserWithEmailAndPassword = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   collection,
@@ -19,6 +19,7 @@ import Prompt from "@/components/Prompt";
 import Message from "@/components/Message";
 
 import { AuthContext } from "../context/AuthContext";
+import { LoadingContext } from "../context/MessageLoadingContext";
 
 function UserStories() {
   const markdown = `
@@ -41,6 +42,9 @@ function UserStories() {
   const Startprompt =
     "The following is a conversation with Jarvis. Jarvis is helpful and creative. Jarvis's only knowledge is Programming. He can only answer questions related to Programming. He only cares about Programming. Jarvis provides often code examples and description. Jarvis provides answers formated in markdown format.";
 
+  const chatRef = useRef(null);
+  const [messageLoading, setMessageLoading] = useState(false);
+
   const [messages, setMessages] = useState([
     {
       created_at: new Date().toISOString(),
@@ -56,10 +60,9 @@ function UserStories() {
     },
   ]);
 
-  // const { currentUser, userImage, uid } = useCurrentUser();
   const { currentUser, userImage, uid, isLoading } = useContext(AuthContext);
+  const { startLoading, finishLoading } = useContext(LoadingContext);
 
-  // console.log("CurrentUsers", currentUser, "Loading", isLoading);
   const router = useRouter();
 
   const saveReference = async (human, ai) => {
@@ -142,6 +145,10 @@ function UserStories() {
     }
   }, [uid]);
 
+  useEffect(() => {
+    chatRef.current.scrollTo(0, chatRef.current.scrollHeight);
+  }, [messages]);
+
   // if (checkUser) {
   //   getData();
   // } else {
@@ -152,6 +159,8 @@ function UserStories() {
     if (prompt.trim().length === 0) {
       return;
     }
+
+    startLoading();
 
     const human = {
       created_at: new Date().toISOString(),
@@ -173,7 +182,7 @@ function UserStories() {
     });
 
     try {
-      // setLoading(true);
+      setMessageLoading(true);
 
       const response = await openai.createCompletion({
         model: "text-davinci-003",
@@ -206,6 +215,7 @@ function UserStories() {
           },
         ];
       });
+
       try {
         saveReference(human, ai);
       } catch (e) {
@@ -216,10 +226,11 @@ function UserStories() {
       // console.log("handle submit error");
       console.error("Error", error);
     }
+    finishLoading();
   }
   return (
     <div className="w-full h-screen">
-      <div className="w-full h-5/6 overflow-auto scrollbar-hide">
+      <div ref={chatRef} className="w-full h-5/6 overflow-auto scrollbar-hide">
         <div className="py-5 px-10">
           {messages.map((message, i) => (
             <Message

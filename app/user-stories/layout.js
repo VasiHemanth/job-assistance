@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 import { AuthProvider } from "../context/AuthContext";
+import { LoadingContextProvider } from "../context/MessageLoadingContext";
 
 export default function StoryLayout({ children }) {
   const { currentUser } = useCurrentUser();
@@ -29,29 +30,31 @@ export default function StoryLayout({ children }) {
   return (
     <section className="h-screen overflow-hidden">
       <AuthProvider>
-        {authenticated ? (
-          <>
-            <div>
-              <Navbar />
-            </div>
-            <div className="w-full">{children}</div>
-          </>
-        ) : (
-          <div
-            onClick={handleLogin}
-            className="grid items-center justify-center h-full"
-          >
-            <div className="flex flex-col items-center justify-center">
-              User must login before going further. Please click on Login!
-              <button
-                className="w-30 bg-blue-500 text-white font-semibold px-4 py-2 mt-5 
+        <LoadingContextProvider>
+          {authenticated ? (
+            <>
+              <div>
+                <Navbar />
+              </div>
+              <div className="w-full">{children}</div>
+            </>
+          ) : (
+            <div
+              onClick={handleLogin}
+              className="grid items-center justify-center h-full"
+            >
+              <div className="flex flex-col items-center justify-center">
+                User must login before going further. Please click on Login!
+                <button
+                  className="w-30 bg-blue-500 text-white font-semibold px-4 py-2 mt-5 
             rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-              >
-                Login
-              </button>
+                >
+                  Login
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </LoadingContextProvider>
       </AuthProvider>
     </section>
   );
