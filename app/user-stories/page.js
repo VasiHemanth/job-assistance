@@ -20,6 +20,7 @@ import Message from "@/components/Message";
 
 import { AuthContext } from "../context/AuthContext";
 import { LoadingContext } from "../context/MessageLoadingContext";
+import EnvAPI from "@/services/EnvAPI";
 
 function UserStories() {
   const markdown = `
@@ -38,9 +39,6 @@ function UserStories() {
   for number in list:
       print(number)
 `;
-
-  const Startprompt =
-    "The following is a conversation with Jarvis. Jarvis is helpful and creative. Jarvis's only knowledge is Programming. He can only answer questions related to Programming. He only cares about Programming. Jarvis provides often code examples and description. Jarvis provides answers formated in markdown format.";
 
   const chatRef = useRef(null);
   const [messageLoading, setMessageLoading] = useState(false);
@@ -62,6 +60,8 @@ function UserStories() {
 
   const { currentUser, userImage, uid, isLoading } = useContext(AuthContext);
   const { startLoading, finishLoading } = useContext(LoadingContext);
+
+  const apiUrl = EnvAPI();
 
   const router = useRouter();
 
@@ -103,12 +103,8 @@ function UserStories() {
       // console.log(userStoryDoc.exists());
 
       if (userStoryDoc.exists()) {
-        // User ID exists in the "user-stories" collection
-        // console.log("user exisy");
         return true;
       } else {
-        // User ID does not exist in the "user-stories" collection
-        // console.log("userId not exist");
         insertUser(uid, currentUser);
         return false;
       }
@@ -118,16 +114,6 @@ function UserStories() {
       throw error;
     }
   };
-
-  // const checkUser = checkUserExists(uid);
-  // // console.log(checkUser);
-  // checkUser.then((result) => {
-  //   if (result) {
-  //     getData();
-  //   } else {
-  //     saveReference(messages[0], messages[1]);
-  //   }
-  // });
 
   useEffect(() => {
     if (uid) {
@@ -147,13 +133,8 @@ function UserStories() {
 
   useEffect(() => {
     chatRef.current.scrollTo(0, chatRef.current.scrollHeight);
+    console.log(process.env.NODE_ENV);
   }, [messages]);
-
-  // if (checkUser) {
-  //   getData();
-  // } else {
-  //   saveReference(messages[0], messages[1]);
-  // }
 
   async function handleSubmit(prompt) {
     if (prompt.trim().length === 0) {
@@ -183,20 +164,17 @@ function UserStories() {
 
     try {
       setMessageLoading(true);
-
-      const response = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: Startprompt + prompt,
-        temperature: 0.7,
-        max_tokens: 640,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
+      const response = await fetch(`${apiUrl}api/completion`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: prompt }),
       });
-      // // console.log(response);
-      let resData = response.data.choices[0].text.trim();
 
-      // // console.log("ResData", resData);
+      const responseData = await response.json();
+
+      let resData = responseData["solution"];
 
       const ai = {
         created_at: new Date().toISOString(),
