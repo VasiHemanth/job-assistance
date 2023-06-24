@@ -140,6 +140,7 @@ function UserStories() {
         }
       });
     }
+    console.log(process.env.NODE_ENV);
   }, [uid]);
 
   // if (checkUser) {
