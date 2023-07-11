@@ -19,6 +19,7 @@ export async function POST(request) {
   let responseData = response.data.choices[0].text.trim();
 
   return new Response(
-    JSON.stringify({ prompt: body.prompt, solution: responseData })
+    JSON.stringify({ prompt: body.prompt, solution: responseData }),
+    { status: 200 }
   );
 }

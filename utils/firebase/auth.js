@@ -4,7 +4,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  getAdditionalUserInfo,
   GithubAuthProvider,
   GoogleAuthProvider,
   signInWithPopup,
@@ -19,7 +18,7 @@ export const signUpUserWithEmailAndPassword = async (email, password) => {
       email,
       password
     );
-    // console.log(userCredential.user);
+    console.log(userCredential.user);
     // console.log(auth);
   } catch (error) {
     // console.log(error);
@@ -35,6 +34,7 @@ export const signInUserWithEmailAndPassword = async (email, password) => {
       password
     );
     // console.log(userCredential.user);
+    return userCredential;
   } catch (error) {
     // console.log(error);
   }

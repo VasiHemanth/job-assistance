@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useEffect, useState, useContext } from "react";
+import React, { createContext, useEffect, useState } from "react";
 // import { auth } from "../firebase"; // Import your Firebase authentication instance
 
 import { auth } from "../../utils/firebase/auth";

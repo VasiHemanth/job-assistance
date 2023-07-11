@@ -4,10 +4,17 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { signInWithGithub, signInWithGoogle } from "@/utils/firebase/auth";
+import {
+  signUpUserWithEmailAndPassword,
+  signInUserWithEmailAndPassword,
+  signInWithGithub,
+  signInWithGoogle,
+} from "@/utils/firebase/auth";
 import Loader from "./Loader";
 
 export default function Auth(props) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
@@ -18,30 +25,39 @@ export default function Auth(props) {
     setPasswordVisible((prevPasswordVisible) => !prevPasswordVisible);
   };
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
+    if (props.details.show) {
+      console.log("login Email", email);
+      console.log("login Password", password);
+    } else {
+      console.log("Sign Up Email", email);
+      console.log("Sign Up Password", password);
+      const signUpData = await signUpUserWithEmailAndPassword(email, password);
+      console.log(signUpData);
+    }
+    setIsLoading(false);
   };
 
   // Github Acknowledgement
   const handleGithub = async () => {
     setIsLoadingGithub(true);
     const githubData = await signInWithGithub();
-    let val = null;
     if (githubData.user) {
-      val = props.loggedIn(githubData);
+      props.authenticate(githubData);
     } else {
-      // console.log(githubData);
+      console.log(githubData);
     }
-    setIsLoadingGithub(val);
+    setIsLoadingGithub(false);
   };
 
-  // Github Acknowledgement
+  // Google Acknowledgement
   const handleGoogle = async () => {
     setIsLoadingGoogle(true);
     const googleData = await signInWithGoogle();
-    // console.log(googleData);
     if (googleData.user) {
-      props.loggedIn(googleData);
+      props.authenticate(googleData);
       setIsLoadingGoogle(false);
     }
   };
@@ -89,7 +105,6 @@ export default function Auth(props) {
             "
             onClick={handleGithub}
           >
-            {" "}
             {isLoadingGithub ? (
               <div className="flex items-center justify-center">
                 <Loader loader="loader_1" />
@@ -124,6 +139,8 @@ export default function Auth(props) {
             <input
               type="email"
               id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 border-2 text-sm
               border-black-shade bg-black-input rounded-md 
               focus:outline-none focus:ring-2 focus:ring-black-bh"
@@ -141,12 +158,14 @@ export default function Auth(props) {
               <input
                 type={passwordVisible ? "text" : "password"}
                 id="password"
+                value={password}
                 className={`w-full px-3 py-2 border-2 text-sm
                 border-black-shade bg-black-input rounded-md 
                 focus:outline-none focus:ring-2 focus:ring-[#33363d]`}
                 placeholder="Enter your password"
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
+                onChange={(e) => setPassword(e.target.value)}
               />
               {isFocused && (
                 <button
@@ -179,6 +198,7 @@ export default function Auth(props) {
             type="submit"
             className="w-full bg-blue-500 text-white font-semibold px-4 py-2 
             rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+            onClick={(e) => submitHandler(e)}
           >
             {isLoading ? <Loader loader="loader_2" /> : "Continue"}
           </button>
