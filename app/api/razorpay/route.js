@@ -14,9 +14,9 @@ export async function POST(request) {
   const payment_capture = 1;
   let amount = null;
   if (body.plan === "three months") {
-    amount = 2999;
+    amount = 100;
   } else {
-    amount = 9999;
+    amount = 200;
   }
   const currency = "INR";
   const options = {
