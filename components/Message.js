@@ -11,7 +11,7 @@ export default function Message({ text: initialText, avatar, idx, author }) {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setText(initialText.slice(0, text.length + 1));
-    }, 2);
+    }, 1);
 
     return () => clearTimeout(timeout);
   }, [initialText, text]);
@@ -22,13 +22,13 @@ export default function Message({ text: initialText, avatar, idx, author }) {
   return (
     <div className={`flex flex-row  p-4 border-black text-sm`}>
       <div className="w-[30px] relative mr-4">
-        <Image src={avatar} width={30} height={30} alt="" />
+        <Image src={avatar} width={35} height={30} alt="" />
       </div>
       <div
         className={`w-full ${bgColorClass} px-4 py-2 rounded-r-lg rounded-b-lg`}
       >
         <ReactMarkdown
-          // className={blinkingCursorClass}
+          className={blinkingCursorClass}
           components={{
             code({ inline, className, children, style, ...props }) {
               const match = /language-(\w+)/.exec(className || "");

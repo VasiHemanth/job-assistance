@@ -12,7 +12,7 @@ export const useCurrentUser = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        setCurrentUser(user.displayName || null);
+        setCurrentUser(user.displayName === null ? 'Iron Man' : user.displayName || 'Hey User');
         setUserImage(user.photoURL || "/profile.svg");
         setUid(user.uid || "");
       } else {

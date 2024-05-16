@@ -83,7 +83,8 @@ function UserStories() {
       });
     });
 
-    setMessages(m);
+    if(m.length != 0)
+      setMessages(m);
     // console.log("messages", messages);
   };
 
@@ -165,7 +166,7 @@ function UserStories() {
 
     try {
       setMessageLoading(true);
-      const response = await fetch(`${apiUrl}api/completion`, {
+      const response = await fetch(`${apiUrl}api/chat-with-groq/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +176,7 @@ function UserStories() {
 
       const responseData = await response.json();
 
-      let resData = responseData["solution"];
+      let resData = responseData["response"];
 
       const ai = {
         created_at: new Date().toISOString(),

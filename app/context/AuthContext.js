@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
     // Set up an observer to listen for authentication state changes
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        setCurrentUser(user.displayName || null);
+        setCurrentUser(user.displayName === null ? 'Iron Man' : user.displayName || 'Hey User');
         setUserImage(user.photoURL || "/profile.svg");
         setUid(user.uid || "");
       } else {

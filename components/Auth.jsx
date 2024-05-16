@@ -4,7 +4,11 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { signInWithGithub, signInWithGoogle } from "@/utils/firebase/auth";
+import {
+  signInUserWithEmailAndPassword,
+  signInWithGithub,
+  signInWithGoogle,
+} from "@/utils/firebase/auth";
 import Loader from "./Loader";
 
 export default function Auth(props) {
@@ -13,13 +17,27 @@ export default function Auth(props) {
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingGithub, setIsLoadingGithub] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [credentials, setCredentials] = useState({
+    email: "",
+    password: "",
+  });
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevPasswordVisible) => !prevPasswordVisible);
   };
 
-  const submitHandler = (event) => {
-    event.preventDefault();
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const credUser = await signInUserWithEmailAndPassword(
+      credentials.email,
+      credentials.password
+    );
+    console.log("credUser", credUser);
+    if (credUser.user) {
+      props.loggedIn(credUser);
+      setIsLoading(false);
+    }
   };
 
   // Github Acknowledgement
@@ -124,6 +142,10 @@ export default function Auth(props) {
             <input
               type="email"
               id="email"
+              value={credentials.email}
+              onChange={(e) =>
+                setCredentials({ ...credentials, email: e.target.value })
+              }
               className="w-full px-3 py-2 border-2 text-sm
               border-black-shade bg-black-input rounded-md 
               focus:outline-none focus:ring-2 focus:ring-black-bh"
@@ -141,6 +163,10 @@ export default function Auth(props) {
               <input
                 type={passwordVisible ? "text" : "password"}
                 id="password"
+                value={credentials.password}
+                onChange={(e) =>
+                  setCredentials({ ...credentials, password: e.target.value })
+                }
                 className={`w-full px-3 py-2 border-2 text-sm
                 border-black-shade bg-black-input rounded-md 
                 focus:outline-none focus:ring-2 focus:ring-[#33363d]`}
